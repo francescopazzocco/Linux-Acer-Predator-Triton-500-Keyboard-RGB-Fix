@@ -52,6 +52,13 @@ def parse_color(value):
     return index
 
 
+def non_negative_int(value):
+    seconds = int(value)
+    if seconds < 0:
+        raise argparse.ArgumentTypeError("--wait must be a non-negative integer")
+    return seconds
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Set static color/brightness on the Triton 500 per-key RGB keyboard.")
@@ -59,11 +66,13 @@ def main():
                         help="palette color, by name or index 0-8 (default: 1 = orange)")
     parser.add_argument("--brightness", type=int, default=50, choices=range(0, 101),
                         metavar="0-100", help="backlight brightness (default: 50)")
-    parser.add_argument("--wait", type=int, default=10, metavar="SECONDS",
-                        help="how long to wait for the USB device, useful at boot (default: 10)")
+    parser.add_argument("--wait", type=non_negative_int, default=10, metavar="SECONDS",
+                        help="seconds to wait for the USB device, useful at boot; "
+                             "0 = single immediate attempt (default: 10)")
     args = parser.parse_args()
 
     dev = None
+    # always attempt at least once; --wait 0 means a single immediate attempt
     for _ in range(max(args.wait, 1)):
         dev = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
         if dev is not None:
