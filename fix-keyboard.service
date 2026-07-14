@@ -1,10 +1,10 @@
 [Unit]
 Description=Fix RGB keyboard flicker on boot and resume
-After=multi-user.target suspend.target
+After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/fix_keyboard.py
 
 [Install]
-WantedBy=multi-user.target suspend.target
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target

@@ -4,9 +4,9 @@ Fix on-key RGB Keyboard Flicker on Acer Predator Triton 500 (Linux / Ubuntu 24.0
 
 This script fixes the keyboard flickering issue on the **Acer Predator Triton 500 (PT515-52)** when running Linux. 
 
-The fix sends a custom USB HID command to the RGB keyboard via `pyusb` and sets it to plain white.
+The fix sends a custom USB HID command to the RGB keyboard via `pyusb` and sets a static color (a palette preset with brightness of your choice, see below).
 
-It runs automatically on boot and after waking from suspend.
+It runs automatically on boot and after waking from suspend or hibernate.
 
 # Supported Keyboards: per-key RGB, not 4-zone 
 
@@ -85,6 +85,57 @@ rm -rf Linux-Acer-Predator-Triton-500-Keyboard-RGB-Fix
 
 ---
 
-After installation, the RGB keyboard fix will be applied on boot and after resume from suspend.
+## Choosing color and brightness
+
+`fix_keyboard.py` accepts optional arguments (defaults reproduce the original behavior):
+
+```bash
+sudo fix_keyboard.py --color red --brightness 100
+```
+
+- `--color` — palette preset, by name or index `0-8`
+- `--brightness` — `0-100` (default `50`)
+- `--wait` — seconds to wait for the USB device to appear, useful at boot (default `10`)
+
+To make your choice permanent, add the arguments to `ExecStart=` in
+`/etc/systemd/system/fix-keyboard.service` and run
+`sudo systemctl daemon-reload && sudo systemctl restart fix-keyboard.service`.
+
+### Firmware palette
+
+As verified on a PT515-52 V1.10 (colors confirmed from photos, so they are actual
+LED colors, not on-screen names). Your firmware revision may differ:
+
+| Index | Name          | Color        |
+|-------|---------------|--------------|
+| 0     | `darkred`     | dark red     |
+| 1     | `orange`      | orange (the project's original default) |
+| 2     | `teal`        | teal / cyan  |
+| 3     | `yellowgreen` | yellow-green |
+| 4     | `blue`        | dark blue    |
+| 5     | `green`       | light green  |
+| 6     | `purple`      | purple / indigo |
+| 7     | `white`       | white        |
+| 8     | `red`         | red          |
+
+### Protocol notes
+
+The command is an 8-byte HID `SET_REPORT` (feature report `0x03`, `bmRequestType 0x21`,
+`bRequest 0x09`, `wValue 0x0300`) on interface 3 of the Darfon `0d62:7cb1` controller:
+
+```
+[0x08, 0x00, mode, 0x05, brightness, color, 0x00, checksum]
+ mode:       0x01 = static
+ brightness: 0x00-0x64 (0-100)
+ color:      palette index 0-8 (table above)
+ checksum:   0xFF - (sum of the 7 preceding bytes)
+```
+
+Per-key addressing and custom RGB values likely exist in the firmware (index 0-8 are
+presets) but have not been reverse-engineered yet — contributions welcome.
+
+---
+
+After installation, the RGB keyboard fix will be applied on boot and after resume from suspend or hibernate.
 
 
