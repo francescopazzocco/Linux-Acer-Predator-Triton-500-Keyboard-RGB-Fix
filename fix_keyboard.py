@@ -89,6 +89,12 @@ def main():
     usb.util.claim_interface(dev, INTERFACE)
     dev.ctrl_transfer(0x21, 0x09, 0x0300, INTERFACE, bytes(payload))
     usb.util.release_interface(dev, INTERFACE)
+    # Reattach the kernel driver: the EC routes the Fn brightness keys
+    # through this interface, and they stop working if it stays detached.
+    try:
+        dev.attach_kernel_driver(INTERFACE)
+    except usb.core.USBError:
+        pass
 
 
 if __name__ == "__main__":
