@@ -24,6 +24,9 @@ VENDOR_ID = 0x0d62
 PRODUCT_ID = 0x7cb1
 INTERFACE = 3
 
+# Last brightness chosen with the Fn+F7/F8 keys (written by fn_brightness.py)
+STATE_FILE = "/var/lib/fix-keyboard/brightness"
+
 # Palette indexes as verified on a PT515-52 V1.10 (photos analyzed for
 # true RGB values). May vary with keyboard firmware revision.
 COLORS = {
@@ -64,12 +67,21 @@ def main():
         description="Set static color/brightness on the Triton 500 per-key RGB keyboard.")
     parser.add_argument("--color", type=parse_color, default=1,
                         help="palette color, by name or index 0-8 (default: 1 = orange)")
-    parser.add_argument("--brightness", type=int, default=50, choices=range(0, 101),
-                        metavar="0-100", help="backlight brightness (default: 50)")
+    parser.add_argument("--brightness", type=int, default=None, choices=range(0, 101),
+                        metavar="0-100",
+                        help="backlight brightness (default: last value set with "
+                             "Fn+F7/F8 if fn_brightness.py is installed, else 50)")
     parser.add_argument("--wait", type=non_negative_int, default=10, metavar="SECONDS",
                         help="seconds to wait for the USB device, useful at boot; "
                              "0 = single immediate attempt (default: 10)")
     args = parser.parse_args()
+
+    if args.brightness is None:
+        try:
+            with open(STATE_FILE) as f:
+                args.brightness = min(100, max(0, int(f.read().strip())))
+        except (OSError, ValueError):
+            args.brightness = 50
 
     dev = None
     # always attempt at least once; --wait 0 means a single immediate attempt

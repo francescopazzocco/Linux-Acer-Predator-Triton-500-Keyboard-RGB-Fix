@@ -1,0 +1,11 @@
+[Unit]
+Description=Fn+F7/F8 keyboard brightness keys (Triton 500 per-key RGB)
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/local/bin/fn_brightness.py
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
