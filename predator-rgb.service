@@ -1,10 +1,10 @@
 [Unit]
-Description=Fix RGB keyboard flicker on boot and resume
+Description=Predator keyboard static red (boot and resume)
 After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/fix_keyboard.py
+ExecStart=/usr/local/bin/predator-rgb-red.py
 
 [Install]
 WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target

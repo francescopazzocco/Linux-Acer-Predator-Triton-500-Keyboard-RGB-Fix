@@ -37,7 +37,7 @@ FORBIDDEN = (0x00, 0xAE, 0xC7)  # firmware's "unassigned slot" sentinel - never 
 
 # Last per-key colors successfully applied, so --replay can restore them
 # after suspend/resume or reboot (the keyboard forgets custom per-key state
-# on its own -- only the palette-based static color in fix_keyboard.py
+# on its own -- only the palette-based static color in predator-rgb-red.py
 # survives that). Same /var/lib/predator-rgb directory the locally deployed
 # brightness state file already uses.
 STATE_FILE = "/var/lib/predator-rgb/perkey_state.json"

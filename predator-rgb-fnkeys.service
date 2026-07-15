@@ -1,0 +1,11 @@
+[Unit]
+Description=Fn+F7/F8 Predator keyboard brightness (per-key RGB Darfon)
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/local/bin/predator-rgb-fnkeys.py
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

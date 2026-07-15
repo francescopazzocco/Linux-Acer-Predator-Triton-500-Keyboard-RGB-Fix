@@ -1,0 +1,11 @@
+[Unit]
+Description=Restore per-key RGB colors on the Predator keyboard (after boot/resume)
+After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target predator-rgb.service
+Wants=predator-rgb.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/predator-rgb-perkey.py --replay --wait 10
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
