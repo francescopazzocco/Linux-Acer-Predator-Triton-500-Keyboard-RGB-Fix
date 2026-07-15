@@ -42,6 +42,12 @@ FORBIDDEN = (0x00, 0xAE, 0xC7)  # firmware's "unassigned slot" sentinel - never 
 # brightness state file already uses.
 STATE_FILE = "/var/lib/predator-rgb/perkey_state.json"
 
+# Which lighting mode is currently active ("static" or "perkey"), so a
+# brightness-key daemon can tell which feature-report payload to resend
+# instead of always forcing static mode and silently discarding per-key
+# colors. Written here and by the static-color script (predator-rgb-red.py).
+MODE_FILE = "/var/lib/predator-rgb/mode"
+
 # Confirmed via a full 0-127 Linux sweep, cross-validated against the
 # earlier partial round-based sweep (they agree on every slot both covered),
 # plus a targeted re-check of the handful of slots that disagreed between
@@ -125,6 +131,8 @@ def save_state(brightness, key_colors):
     }
     with open(STATE_FILE, "w") as f:
         json.dump(data, f)
+    with open(MODE_FILE, "w") as f:
+        f.write("perkey\n")
 
 
 def build_frame(slot_colors):
